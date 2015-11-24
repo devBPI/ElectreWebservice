@@ -5,7 +5,9 @@ import com.vtence.molecule.Request;
 import com.vtence.molecule.Response;
 import com.vtence.molecule.WebServer;
 import com.vtence.molecule.lib.BinaryBody;
+import com.vtence.molecule.lib.TextBody;
 import com.vtence.molecule.routing.DynamicRoutes;
+import electre.ISBN;
 import electre.RestClient;
 import org.apache.commons.io.IOUtils;
 
@@ -20,27 +22,57 @@ public class ConnectorServer {
     public void run(WebServer server) throws IOException {
         server.start(new DynamicRoutes() {{
 
-            map("/").to((request, response) -> response.done("Welcome!"));
 
             get("/imagette/:id").to((request, response) -> {
                 Optional<InputStream> thumbnail = new RestClient().fetchthumbnail(extractISBN(request));
-                sendResponse(response, "image/jpeg", getBinaryBody(thumbnail));
+                sendResponse(
+                    response, "image/jpeg", getBinaryBody(thumbnail)
+                );
             });
 
             get("/couverture/:id").to((request, response) -> {
                 Optional<InputStream> cover = new RestClient().fetchCover(extractISBN(request));
-                sendResponse(response, "image/jpeg", getBinaryBody(cover));
+                sendResponse(
+                    response, "image/jpeg", getBinaryBody(cover)
+                );
+            });
+
+            get("/quatrieme/:id").to((request, response) -> {
+                Optional<InputStream> backCover = new RestClient().fetchBackCover(extractISBN(request));
+                sendResponse(
+                    response, "text/xml", getTextBody(backCover)
+                );
+            });
+
+            get("/tabledesmatieres/:id").to((request, response) -> {
+                Optional<InputStream> tableOfContent = new RestClient().fetchTableOfContent(extractISBN(request));
+                sendResponse(
+                        response, "text/xml", getTextBody(tableOfContent)
+                );
             });
 
         }});
     }
 
-    private BinaryBody getBinaryBody(Optional<InputStream> thumbnail) throws IOException {
-        return thumbnail.isPresent() ? new BinaryBody(IOUtils.toByteArray(thumbnail.get())) : new BinaryBody(new byte[0]);
+    private BinaryBody getBinaryBody(Optional<InputStream> image) throws IOException {
+        try {
+            return image.isPresent() ? new BinaryBody(IOUtils.toByteArray(image.get())) : new BinaryBody(new byte[0]);
+        } finally {
+            if(image.isPresent()) image.get().close();
+        }
     }
 
-    private String extractISBN(Request request) {
-        return request.parameter("id");
+    private TextBody getTextBody(Optional<InputStream> content) throws IOException {
+        try {
+            TextBody responseBody = new TextBody();
+            return content.isPresent() ? responseBody.append(IOUtils.toString(content.get(), "latin1")) : responseBody;
+        } finally {
+            if(content.isPresent()) content.get().close();
+        }
+    }
+
+    private ISBN extractISBN(Request request) {
+        return new ISBN(request.parameter("id"));
     }
 
     private void sendResponse(Response response, String contentType, Body body) {
