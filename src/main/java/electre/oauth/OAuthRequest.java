@@ -15,8 +15,8 @@ public class OAuthRequest {
 
     Logger log = Logger.getLogger(OAuthRequest.class.getName());
 
-    private String consumerKey = "api_opac_bpi";
-    private String secret = "abo536?api_rest_opac/bpi";
+    private String consumerKey = Credential.ELECTRE.key;
+    private String secret = Credential.ELECTRE.secret;
 
     private OAuthParameters createParameters() {
         OAuthHmacSigner signer = new OAuthHmacSigner();

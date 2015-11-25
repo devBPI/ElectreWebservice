@@ -23,7 +23,7 @@ dependencies {
 
 jar {
     manifest {
-        attributes "Main-Class": "BPI.ConnectorServer"
+        attributes "Main-Class": "BPI.Launch"
     }
 
     from {

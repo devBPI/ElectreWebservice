@@ -47,7 +47,7 @@ public class ConnectorServer {
             get("/tabledesmatieres/:id").to((request, response) -> {
                 Optional<InputStream> tableOfContent = new RestClient().fetchTableOfContent(extractISBN(request));
                 sendResponse(
-                        response, "text/xml", getTextBody(tableOfContent)
+                    response, "text/xml", getTextBody(tableOfContent)
                 );
             });
 
@@ -78,12 +78,5 @@ public class ConnectorServer {
     private void sendResponse(Response response, String contentType, Body body) {
         response.contentType(contentType);
         response.done(body);
-    }
-
-    public static void main(String[] args) throws IOException {
-        ConnectorServer server = new ConnectorServer();
-        WebServer webServer = WebServer.create();
-        server.run(webServer);
-        System.out.println("Access at " + webServer.uri());
     }
 }
