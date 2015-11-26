@@ -37,11 +37,14 @@ public class ISBN {
 
     @Override
     public boolean equals(Object obj) {
+        if(!(obj instanceof ISBN)) return false;
+
         return (this.toString().equals(obj.toString()));
     }
 
     @Override
     public int hashCode() {
-        return (isIsbn10()) ? toIsbn13().hashCode() : isbn.hashCode();
+        if(isIsbn10()) return toIsbn13().hashCode();
+        return 31 + (isbn == null ? 0 : isbn.hashCode());
     }
 }

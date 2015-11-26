@@ -46,8 +46,13 @@ public class ISBNTest {
     }
 
     @Test
+    public void testIsbnIsNotEqualsToString() throws Exception {
+        assertThat(isbn13.equals(isbn13.toString())).isFalse();
+    }
+
+    @Test
     public void testHashCode() throws Exception {
-        assertThat(isbn10.hashCode()).isEqualTo(901860106);
+        assertThat(isbn10.hashCode()).isEqualTo(901860137);
         assertThat(isbn10.hashCode()).isEqualTo(isbn13.hashCode());
     }
 }
