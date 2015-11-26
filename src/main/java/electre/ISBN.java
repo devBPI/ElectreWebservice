@@ -44,7 +44,6 @@ public class ISBN {
 
     @Override
     public int hashCode() {
-        if(isIsbn10()) return toIsbn13().hashCode();
-        return 31 + (isbn == null ? 0 : isbn.hashCode());
+        return 31 + toString().hashCode();
     }
 }
